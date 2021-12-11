@@ -10,7 +10,7 @@ try {
     $statement = $pdo->query( 'SELECT * FROM students');
 
     while($resultSet = $statement->fetch(PDO::FETCH_ASSOC)){
-        echo $resultSet["id"]." - ".$resultSet["name"]." - ".$resultSet["birth_date"];
+        echo $resultSet["id"]." - ".$resultSet["name"];
         $alunos[] = new Student($resultSet["id"],$resultSet["name"], new DateTimeImmutable($resultSet["birth_date"]));
     }
 
