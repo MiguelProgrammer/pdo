@@ -6,8 +6,8 @@ require_once 'vendor/autoload.php';
 
 try {
 
-    $pdo = new PDO('sqlite:' . __DIR__ . ' ./banco2sqlite');
-    $student = new Student(null,"Jéssica Silva", new DateTimeImmutable('1990-01-08'));
+    $pdo = new PDO('sqlite:' . __DIR__ . '/banco.sqlite');
+    $student = new Student(null,"Miguel Silva", new DateTimeImmutable('1990-01-11'));
     $sqlInsert = "INSERT INTO students (name, birth_date) VALUES (:name, :birth_date);";
 
     $message = "Erro ao executar instrução!".PHP_EOL;
