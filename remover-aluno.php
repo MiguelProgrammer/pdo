@@ -9,7 +9,7 @@ try {
 
     $pdo = ConnectionCreator::createConnection();
     $statement = $pdo->prepare( 'DELETE FROM students WHERE id = ?');
-    $statement->bindValue(1,2,PDO::PARAM_INT);
+    $statement->bindValue(1,5,PDO::PARAM_INT);
 
     if($statement->execute()){
         echo "Executado com sucesso!";
