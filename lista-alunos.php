@@ -2,17 +2,19 @@
 
 use Alura\Pdo\Domain\Model\Student;
 use Alura\Pdo\Infrastructure\Persistence\ConnectionCreator;
+use Alura\Pdo\Infrastructure\Repository\PDOStudentRepository;
 
 require_once 'vendor/autoload.php';
 
 try {
 
     $pdo = ConnectionCreator::createConnection();
-    $statement = $pdo->query( 'SELECT * FROM students');
+    $repository = new PDOStudentRepository($pdo);
 
-    while($resultSet = $statement->fetch()){
-        echo $resultSet["id"]." - ".$resultSet["name"]." - ".$resultSet["birth_date"].PHP_EOL;
-        $alunos[] = new Student($resultSet["id"],$resultSet["name"], new DateTimeImmutable($resultSet["birth_date"]));
+    $returnData = $repository->allStudents();
+
+    foreach ($returnData as $info) {
+        var_dump($info);
     }
 
 } catch (mysqli_sql_exception $ex){

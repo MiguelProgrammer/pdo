@@ -2,6 +2,7 @@
 
 namespace Alura\Pdo\Infrastructure\Repository;
 
+use Alura\Pdo\Domain\Model\Phone;
 use Alura\Pdo\Domain\Model\Student;
 use Alura\Pdo\Domain\Repository\StudentRepository;
 use Alura\Pdo\Infrastructure\Persistence\ConnectionCreator;
@@ -19,16 +20,17 @@ class PDOStudentRepository implements StudentRepository
 
     public function allStudents(): array
     {
-        $this->connection->query("SELECT * FROM students");
-        return $this->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->connection->query("SELECT * FROM students");
+        return $this->listStudents($stmt);
     }
 
     public function listStudents(PDOStatement $stmt): array
     {
-        $listStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $listStudents = $stmt->fetchAll();
         $listStudentsArray = [];
         foreach ($listStudents as $id => $student){
-            $listStudentsArray[] = new Student($id,$student["name"],new \DateTimeImmutable($student["birthDate"]));
+            $listStudentsArray[] = $aStudent = new Student($id, $student["name"], new \DateTimeImmutable($student["birth_date"]));
+            $this->fillPhoneOf($aStudent);
         }
         return $listStudentsArray;
     }
@@ -38,7 +40,7 @@ class PDOStudentRepository implements StudentRepository
         $stmt = $this->connection->prepare("SELECT * FROM students WHERE birth_date = :birthDate");
         $stmt->bindValue(":birthDate", $birthDay->format("Y-m-d"));
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll();
 
     }
 
@@ -77,5 +79,20 @@ class PDOStudentRepository implements StudentRepository
         $stmt = $this->connection->prepare("DELETE FROM students WHERE id = ?");
         $stmt->bindValue(1, $student->id(), PDO::PARAM_INT);
         return $stmt->execute();
+    }
+
+    private function fillPhoneOf(Student $aStudent): void
+    {
+        $sqlQuery = "SELECT id, area_code, number FROM phones WHERE student_id = ?";
+        $stmt = $this->connection->prepare($sqlQuery);
+        $stmt->bindValue(1, $aStudent->id(), PDO::PARAM_INT);
+        $stmt->execute();
+
+        $listPhones = $stmt->fetchAll();
+        foreach ($listPhones as $phone){
+            $phone = new Phone($phone["id"], $phone["area_code"], $phone["number"]);
+            $aStudent->addPhone($phone);
+        }
+
     }
 }
