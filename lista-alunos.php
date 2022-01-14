@@ -10,7 +10,7 @@ try {
     $pdo = ConnectionCreator::createConnection();
     $statement = $pdo->query( 'SELECT * FROM students');
 
-    while($resultSet = $statement->fetch(PDO::FETCH_ASSOC)){
+    while($resultSet = $statement->fetch()){
         echo $resultSet["id"]." - ".$resultSet["name"]." - ".$resultSet["birth_date"].PHP_EOL;
         $alunos[] = new Student($resultSet["id"],$resultSet["name"], new DateTimeImmutable($resultSet["birth_date"]));
     }
